@@ -1,226 +1,300 @@
-# Laravel Relationships
+# Many to Many
 
-## One to Many (Post & Category)
+Add many to many relationship between tags and posts
 
-In un blog una relazione one to many puó esserci tra un articolo ed una categoria.
-Un articolo puó essere associato ad una categoria.
-Una categoria puó avere molti articoli.
+## Step 1
 
-### Definire la Categoria
+create methods in Post and Tag models
 
-Creiamo un modello per la Categoria, con migrazione, il controller e il seeder
-
-```bash
-php artisan make:model -rcsm Category
-```
-
-Definiamo la struttura della categoria
+in Tag.php
 
 ```php
-Schema::create('categories', function (Blueprint $table) {
-  $table->id();
-  $table->string('name');
-  $table->string('slug');
-  $table->timestamps();
+    /**
+     * The posts that belong to the Tag
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function posts()
+    {
+        return $this->belongsToMany(Post::class);
+    }
+```
+
+in Post.php
+
+```php
+    /**
+     * The tags that belong to the Post
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class);
+    }
+```
+
+## Step 2. Create migration for the pivot table
+
+```bash
+php artisan make:migration create_post_tag_table
+```
+
+## Step 3. Add foreing keys to the pivot table
+
+```php
+ Schema::create('post_tag', function (Blueprint $table) {
+
+    $table->unsignedBigInteger('post_id');
+    $table->foreign('post_id')->references('id')->on('posts');
+    $table->unsignedBigInteger('tag_id');
+    $table->foreign('tag_id')->references('id')->on('tags');
+    $table->primary(['post_id', 'tag_id']);
+
 });
 ```
 
-Definiamo il seeder
-
-```php
-$categories = ['Programming', 'Automation', 'Web design', 'Best Practices'];
-foreach ($categories as $category) {
-    $cat = new Category();
-    $cat->name = $category;
-    $cat->slug = Str::slug($category);
-    $cat->save();
-}
-```
-
-Migriamo la tabella e facciamo il seeding
+## Step 4. run the migration
 
 ```bash
+
 php artisan migrate
-php artisan db:seed --class=CategorySeeder
 ```
 
-### Creiamo una relazione one to many
-
-Un post puó essere associato ad una categoria, quindi possiamo dire che un post 'appartiene ad una' categoria. A post belongsTo a category.
-
-nel modello Post.php
-
-```php
-public function category(): BelongsTo
-{
-    return $this->belongsTo(Category::class);
-}
-```
-
-Define the inverse on Category.php
-
-```php
-public function posts(): HasMany
-{
-    return $this->hasMany(Post::class);
-}
-```
-
-### Impostiamo la chiave esterna sulla tabella secondaria
-
-Tra i posts e le categories la tabella indipendente é quella delle categorie, quindi nella tabella dei posts bisogna aggiungere la foreign key category_id che punta all'id della tabella categories.
-
-Creaiamo una nuova migrazione:
+Attention!
+La tabella Tags era stata creata a lezione vuota, non ha colonne eccetto id e timestamps, se hai seguito quanto fatto in classe bisogna aggiungere la colonna name alla tabella tags.
 
 ```bash
-php artisan make:migration add_category_id_to_posts_table
+php artisan make:migration add_name_to_tags_table --table=tags
 ```
 
-Implementiamo la migrazione
+inside the migration file just created:
 
 ```php
-public function up()
+/**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::table('tags', function (Blueprint $table) {
+            $table->string('name', 20);
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::table('tags', function (Blueprint $table) {
+            $table->dropColumn('name');
+        });
+    }
+```
+
+Run the migration again
+
+```bash
+
+php artisan migrate
+```
+
+## Step 5
+
+Seed the tags table
+
+```php
+use Illuminate\Database\Seeder;
+use Faker\Generator as Faker;
+class TagSeeder extends Seeder
 {
-  Schema::table('posts', function (Blueprint $table) {
-      $table->unsignedBigInteger('category_id')->nullable()->after('id');
-      $table->foreign('category_id')->references('id')->on('categories')->onDelete('set null');
-  });
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run(Faker $faker)
+    {
+        for ($i=0; $i < 10; $i++) {
+            $newTag = new App\Tag();
+            $newTag->name = $faker->word();
+            $newTag->save();
+        }
+    }
 }
 
-public function down()
-{
-  Schema::table('posts', function (Blueprint $table) {
-      $table->dropForeign('posts_category_id_foreign');
-      $table->dropColumn('category_id');
-  });
-}
-
 ```
 
-Migriamo la tabella `php artisan migrate`
-
-### Inseriamo e aggiorniamo i modelli di una relazione
-
-[Documentation](https://laravel.com/docs/7.x/eloquent-relationships#inserting-and-updating-related-models)
-
-Tramite tinker `php artisan tinker` creiamo delle associazioni tra posts e categorie e viceversa.
-
-Aggiungiamo un post ad una categoria
-
-```php
-//Seleziona post
-$post = App\Post::find(20)
-//Seleziona Categoria
-$category App\Category::find(4)
-// Assgna il post alla categoria
-$cat->posts()->save($post);
-//Verifichiamo
-$cat->posts
+run the seeder
 
 ```
-
-Assegnamo una categoria ad un post
-
-```php
-$cat2 = App\Category::find(2);
-$post = App\Post::find(24)
-$post->category()->associate($cat2)
-//Verifichiamo
-$post->category
+php artisan db:seed --class=TagSeeder
 ```
 
-Assegnato tutti i posts ad una categoria
+## Step 6. Attach and detach
 
-```php
-// Selezioniamo alcuni posts
-$posts = App\Post::where('id', '>', 25)->get();
-// Selezioniamo una categoria
-$cat3 = App\Category::find(3);
-// Associamo i posts all categoria
-$cat3->posts()->saveMany($posts);
-// Verifichiamo
-$cat3->posts
+Attach tags to posts via tinker
+
+```bash
+php artisan tinker
+
+// show all tags
+Tag::all()
+// take the first tag
+$tag = Tag::first()
+// show all posts associated with a tag
+$tag->posts
+// attach to the tag the post with and id of 1
+$tag->posts()->attach(1)
+
+// Do the same starting from a post
+// show all posts
+Post::all()
+// take the first tag
+$post = Post::first()
+// show all posts associated with a tag
+$post->tags
+// attach to the tag the post with and id of 1
+$post->tags()->attach(1)
+
+// Attach other posts to other tags
+$post = Post::find(2)
+$post->tags()->attach(2)
+$post->tags()->attach(3)
+
+// Detach from a post all tags
+$post->tags()->detach()
+// Detach from a post a tag - only incase has other tags attached
+$post->tags()->detach(1)
 ```
 
-### Aggiungiamo la relazione al CRUD
+## step 7. Add tags to the Posts CRUD (create/store)
 
-nell'Admin/PostController aggiungiamo al metodo create anche una select per mostrare le categorie disponibili.
+### show all tags attached to a post in the post.show view
 
-Aggiungiamo alle fillable properties del modello Post, category_id
+```html
+<div class="tags">
+    tags: @if(count($post->tags) > 0) @foreach($post->tags as $tag)
+    {{$tag->name}} @endforeach @else
+    <span>No tags</span>
 
-```php
-protected $fillable = ['title', 'image', 'body', 'category_id'];
+    @endif
+</div>
 ```
 
-Modifichiamo il metodo create dell'Admin/PostController
+### Add tags to a post when it's created (PostController.php)
+
+Change the create method on the Post controller and returns all tags in the db
+
+in the PostController@create method
 
 ```php
 public function create()
 {
-    $categories = Category::all();
-    return view('admin.posts.create', compact('categories'));
+    //get all tags
+    $tags = Tag::all();
+    //dd($tags);
+    return view('posts.create', compact('tags'));
 }
-
 ```
 
-Mostriamo il select nel form
+A Multiple select needs a name=tags[] to return multiple elements
+posts/create.blade.php
 
 ```html
 <div class="form-group">
-    <label for="category_id">Categories</label>
-    <select class="form-control" name="category_id" id="category_id">
-        <option selected disabled>Select a category</option>
-        @foreach($categories as $category)
-        <option value="{{$category->id}}">{{$category->name}}</option>
-        @endforeach
+    <label for="tags">Tags</label>
+    <select multiple class="form-control" name="tags[]" id="tags">
+        @if($tags) @foreach($tags as $tag)
+        <option value="{{$tag->id}}">{{$tag->name}}</option>
+        @endforeach @endif
     </select>
 </div>
+@error('tags')
+<div class="alert alert-danger">{{ $message }}</div>
+@enderror
 ```
 
-Dumpiamo i dati nel metodo store e vediamo che otteniamo
+### Attach tags to the post via the store method
 
 ```php
-ddd($request->all());
+    public function store(Request $request)
+    {
+        //dd($request->all()); // get the request
+        //dd($request->tags); // get all tags
+
+        // validare i dati
+        $validatedData = $request->validate([
+           'title' => 'required',
+           'body' => 'required'
+        ]);
+       $new_post = Post::create($validatedData);
+
+
+        // attach all tags to the post
+        $new_post->tags()->attach($request->tags);
+
+        return redirect()->route('posts.show', $new_post);
+    }
 ```
 
-Aggiungiamo una regola di validazione per la categoria ricevuta dall'utente
+### Validate tags before storing them in the database
+
+Hack the form and add a tag that does not exit to prove db issue then
+Add the tags validation like so.
 
 ```php
- 'category' => 'nullable|exists:categories,id'
+    $validatedData = $request->validate([
+        'title' => 'required',
+        'body' => 'required',
+        'tags'=>'exists:tags,id'
+    ]);
 ```
 
-Create the post and associate the category
+## Step 8. Add tags to the CRUD (edit/update)
 
-```php
-Post::create($validateData);
-return redirect()->route('admin.posts.index');
-```
-
-Aggiorniamo il select al form edit e aggiorniamo il metodo edit
+add select form field to the edit form
 
 ```html
 <div class="form-group">
-    <label for="category_id">Categories</label>
-    <select class="form-control" name="category_id" id="category_id">
-        <option value="">Select a category</option>
-        @foreach($categories as $category)
-        <option value="{{$category->id}}" {{$category->
-            id == old('category', $post->category_id) ? 'selected' :
-            ''}}>{{$category->name}}
+    <label for="tags">Tags</label>
+    <select multiple class="form-control" name="tags[]" id="tags">
+        @if($tags) @foreach($tags as $tag)
+        <option value="{{$tag->id}}" {{$post->
+            tags->contains($tag) ? 'selected' : ''}}>{{$tag->name}}
         </option>
-        @endforeach
+        @endforeach @endif
     </select>
 </div>
+@error('tags')
+<div class="alert alert-danger">{{ $message }}</div>
+@enderror
 ```
 
-Aggiungiamo alla validazione category_id nel metodo update
+### update and validate
 
 ```php
-'category_id' => 'nullable|exists:categories,id',
-```
+    public function update(Request $request, Post $post)
+    {
 
-Mostriamo le categorie nei post, posts.show view
+        //dd($request->tags); // check the tags first with a dd
 
-```php
-<em>Category: {{ $post->category ? $post->category->name : 'Uncategorized'}}</em>
+        // validare i dati
+         $validatedData = $request->validate([
+           'title' => 'required',
+           'body' => 'required',
+           'tags' => 'exists:tags,id' //validate tags
+        ]);
+
+        //update post data
+        $post->update($validatedData);
+
+        // Update tags with sync
+        $post->tags()->sync($request->tags);
+        return redirect()->route('posts.index');
+    }
 ```
