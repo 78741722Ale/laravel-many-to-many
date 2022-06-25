@@ -1,11 +1,13 @@
 <?php
 
 namespace App\Models;
-
 use Illuminate\Support\Str;
-
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+
+
+
 class Post extends Model
 {
     protected $fillable = ['title', 'content', 'slug', 'cover_image', 'category_id'];
@@ -15,8 +17,6 @@ class Post extends Model
         return Str::slug($title, '-');
     }
 
-
-
     /**
      * Get the category that owns the Post
      *
@@ -25,6 +25,16 @@ class Post extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * The tags that belong to the Post
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class);
     }
 
 
