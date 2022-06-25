@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddNameToTagsTable extends Migration
+class CreateTagsTable extends Migration
 {
 /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class AddNameToTagsTable extends Migration
      */
     public function up()
     {
-        Schema::table('tags', function (Blueprint $table) {
+        Schema::create('tags', function (Blueprint $table) {
             $table->id();
             $table->string('name', 100)->unique();
             $table->string('slug', 150);
@@ -28,8 +28,6 @@ class AddNameToTagsTable extends Migration
      */
     public function down()
     {
-        Schema::table('tags', function (Blueprint $table) {
-            $table->dropColumn('name');
-        });
+        Schema::dropIfExists('tags');
     }
 }

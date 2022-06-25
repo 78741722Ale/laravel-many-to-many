@@ -13,7 +13,7 @@ class Tag extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function posts()
+    public function posts(): BelongsToMany
     {
         return $this->belongsToMany(Post::class);
     }
