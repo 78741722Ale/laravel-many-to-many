@@ -14,9 +14,9 @@
     </div>
     <!-- Input immagine del post -->
     <div class="mb-4">
-        <label for="cover_image">Immagine</label>
-        <input type="text" name="cover_image" id="cover_image" class="form-control  @error('cover_image') is-invalid @enderror" placeholder="Learn php article" aria-describedby="cover_imageHelper" value="{{old('cover_image')}}">
-        <small id="cover_imageHelper" class="text-muted">Immagine del Post</small>
+        <label for="cover">Immagine</label>
+        <input type="text" name="cover" id="cover" class="form-control  @error('cover') is-invalid @enderror" placeholder="Learn php article" aria-describedby="coverHelper" value="{{old('cover')}}">
+        <small id="cover" class="text-muted">Immagine del Post</small>
     </div>
     <!-- Selezione della categoria -->
     <div class="mb-3">
@@ -28,6 +28,18 @@
             @endforeach
         </select>
     </div>
+    <!-- Tag della categoria -->
+    <div class="form-group">
+        <label for="tags">Tags</label>
+        <select multiple class="form-control" name="tags[]" id="tags">
+            @if($tags) @foreach($tags as $tag)
+            <option value="{{$tag->id}}">{{$tag->name}}</option>
+            @endforeach @endif
+        </select>
+    </div>
+    @error('tags')
+    <div class="alert alert-danger">{{ $message }}</div>
+    @enderror
     <!-- Contenuto del post -->
     <div class="mb-4">
         <label for="content">Contenuto</label>
