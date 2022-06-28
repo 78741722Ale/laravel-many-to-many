@@ -125,9 +125,29 @@ class PostController extends Controller
             ]
         );
 
+
         // Genera lo slug
         $slug = Post::generateSlug($request->title);
         $val_data['slug'] = $slug;
+
+        /*
+        Rimetto la stessa identica cosa di Create
+        prima di post update
+        */
+        if(array_key_exists('cover', $request->all())) {
+            // Valida il file
+            $request->validate([
+                'cover' => 'nullable|image|max:500'
+            ]);
+            Storage::delete($post->cover);
+            // Salvarlo nel file System
+            $path = Storage::put('post_images', $request->cover);
+
+            // passo il percorso all'array di dati per il salvataggio
+            $val_data['cover'] = $path;
+        }
+
+
          /* Avvio l'update */
         $post->update($val_data);
         /* Lo sincronizzo coi Tags */

@@ -5,7 +5,7 @@
 
 <div class="posts d-flex py-4">
     <!-- Immagine del Post -->
-    <img class="img-fluid" src="{{$post->cover}}" alt="{{$post->title}}">
+    <img class="img-fluid" src="{{asset('storage/' . $post->cover)}}" alt="{{$post->title}}">
     <!-- Contenuto di tutto il post con le categorie -->
     <div class="post-data px-4">
         <!-- Titolo -->
@@ -16,12 +16,13 @@
         </div>
         <!-- Tags -->
         <div class="tags">
-            <strong>Tags: </strong>  @if(count($post->tags) > 0)
+            <strong>Tags: </strong>
+            @if(count($post->tags) > 0)
                 @foreach($post->tags as $tag)
-                {{$tag->name}}
+                <span>{{$tag->name}}</span>
                 @endforeach
             @else
-            <span>No tags</span>
+            <span>N/A</span>
             @endif
         </div>
         <!-- Contenuto -->
