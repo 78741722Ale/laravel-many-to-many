@@ -9,8 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PostRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-
-
+use Illuminate\Support\Facades\Storage;
 class PostController extends Controller
 {
     /**
@@ -58,11 +57,16 @@ class PostController extends Controller
 
 
         // Verificare la richiesta e se contiene un file con una condizione
-        ddd($request->hasFile('cover'));
+        /* ddd($request->hasFile('cover')); */
         if(array_key_exists('cover', $request->all())) {
             // Valida il file
+            $request->validate([
+                'cover' => 'nullable|image|max:500'
+            ]);
             // Salvarlo nel file System
+            $path = Storage::put('post_images', $request->cover);
             // Recupera il percorso
+            ddd($path);
             // passo il percorso all'array di dati per il salvataggio
         }
 
