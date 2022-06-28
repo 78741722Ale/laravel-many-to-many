@@ -66,11 +66,10 @@ class PostController extends Controller
             // Salvarlo nel file System
             $path = Storage::put('post_images', $request->cover);
             // Recupera il percorso
-            ddd($path);
+            /* ddd($path); */
             // passo il percorso all'array di dati per il salvataggio
+            $val_data['cover'] = $path;
         }
-
-
 
         // Crea la risorsa
         $new = Post::create($val_data);
