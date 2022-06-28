@@ -19,7 +19,8 @@ class PostController extends Controller
     public function index()
     {
         $posts = Post::orderByDesc('id')->get();
-        return view('admin.posts.index', compact('posts'));
+        $tags = Tag::all();
+        return view('admin.posts.index', compact('posts', 'tags'));
     }
 
     /**
@@ -50,7 +51,8 @@ class PostController extends Controller
         $slug = Post::generateSlug($request->title);
         $val_data['slug'] = $slug;
         // Crea la risorsa
-        Post::create($val_data);
+        $new = Post::create($val_data);
+        $new->tags()->attach($request->tags);
         /* Ora il return del pattern */
         return redirect()->route('admin.posts.index');
     }
@@ -95,7 +97,7 @@ class PostController extends Controller
             [
                 'title' => 'required|max:50',
                 'category_id' => 'nullable|exists:categories,id',
-                'cover_image' => 'nullable',
+                'cover' => 'nullable',
                 'content' => 'nullable'
             ]
         );

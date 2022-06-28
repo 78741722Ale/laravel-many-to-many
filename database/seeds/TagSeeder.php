@@ -19,7 +19,7 @@ class TagSeeder extends Seeder
         foreach($tags as $tag) {
             $newTag = new Tag();
             $newTag->name = $tag;
-            $newTag->slug = Str::slug('$newTag->name');
+            $newTag->slug = Str::slug($newTag->name);
             $newTag->save();
         }
     }
