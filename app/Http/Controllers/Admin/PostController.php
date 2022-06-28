@@ -49,11 +49,25 @@ class PostController extends Controller
     public function store(PostRequest $request)
     {
         /* Effettua verifica della validazione */
-        dd($request->all());
+        /* ddd($request->all()); */
+
         $val_data = $request->validated();
         // Genera la slug
         $slug = Post::generateSlug($request->title);
         $val_data['slug'] = $slug;
+
+
+        // Verificare la richiesta e se contiene un file con una condizione
+        ddd($request->hasFile('cover'));
+        if(array_key_exists('cover', $request->all())) {
+            // Valida il file
+            // Salvarlo nel file System
+            // Recupera il percorso
+            // passo il percorso all'array di dati per il salvataggio
+        }
+
+
+
         // Crea la risorsa
         $new = Post::create($val_data);
         $new->tags()->attach($request->tags);

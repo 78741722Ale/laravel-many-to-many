@@ -4,7 +4,7 @@
 
 <h2 class="py-4">Crea un nuovo post</h2>
 @include('partials.errors')
-<form action="{{route('admin.posts.store')}}" method="post">
+<form action="{{route('admin.posts.store')}}" method="post" enctype="multipart/form-data">
     @csrf
     <!-- Input del titolo -->
     <div class="mb-4">
