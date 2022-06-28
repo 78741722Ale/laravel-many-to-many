@@ -15,7 +15,7 @@
     <!-- Input immagine del post -->
     <div class="mb-4">
         <label for="cover">Immagine</label>
-        <input type="text" name="cover" id="cover" class="form-control @error('cover') is-invalid @enderror" placeholder="Learn php article" aria-describedby="coverHelper" value="{{old('cover')}}">
+        <input type="file" name="cover" id="cover" class="form-control @error('cover') is-invalid @enderror" placeholder="Learn php article" aria-describedby="coverHelper">
         <small id="cover" class="text-muted">Immagine del Post</small>
     </div>
     <!-- Selezione della categoria -->

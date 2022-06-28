@@ -48,6 +48,8 @@ class PostController extends Controller
      */
     public function store(PostRequest $request)
     {
+        /* Effettua verifica della validazione */
+        dd($request->all());
         $val_data = $request->validated();
         // Genera la slug
         $slug = Post::generateSlug($request->title);
