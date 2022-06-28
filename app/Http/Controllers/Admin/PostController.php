@@ -142,7 +142,6 @@ class PostController extends Controller
             Storage::delete($post->cover);
             // Salvarlo nel file System
             $path = Storage::put('post_images', $request->cover);
-
             // passo il percorso all'array di dati per il salvataggio
             $val_data['cover'] = $path;
         }
@@ -154,7 +153,7 @@ class PostController extends Controller
         $post->tags()->sync($request->tags);
 
         /* Ora eseguo il return della rotta */
-        return redirect()->route('admin.posts.index');
+        return redirect()->route('admin.posts.index')->with('message', "$post->title è stato aggiornato");
     }
 
     /**
@@ -165,9 +164,11 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
+        /* La stessa presa in update */
+        Storage::delete($post->cover);
         // Qui si Cancella un record
         $post->delete();
         /* Ora eseguo il return della rotta */
-        return redirect()->route('admin.posts.index');
+        return redirect()->route('admin.posts.index')->with('message', "$post->title è stato eliminato");
     }
 }
