@@ -39,6 +39,24 @@
             @endforeach
         </select>
     </div>
+    <!-- Zona del tag -->
+    <div class="mb-4">
+        <label for="tags" class="form-label m-0">Tags</label>
+        <!-- Select -->
+        <select multiple class="form-select" name="tags[]" id="tags" aria-label="tags">
+        <option value="" disabled>Seleziona un Tag</option>
+        @forelse ($tags as $tag)
+            @if($errors->any())
+                <option value="{{$tag->id}}" {{in_array($tag->id,old('tags')) ? 'selected' : ''}}>{{$tag->name}}</option>
+            @else
+                <option value="{{$tag->id}}" {{$post->tags->contains($tag->id) ? 'selected' : ''}}>{{$tag->name}}</option>
+            @endif
+            <!-- Condizione -->
+        @empty
+            <option value="">No tags</option>
+        @endforelse
+        </select>
+    </div>
     <!-- Contenuto del Post -->
     <div class="mb-4">
         <label for="content">Contenuto del Post</label>

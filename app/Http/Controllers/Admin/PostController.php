@@ -9,6 +9,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PostRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+
+
 class PostController extends Controller
 {
     /**
@@ -79,8 +81,9 @@ class PostController extends Controller
     {
         /* Qua Dichiaro i dati da editare tramite modello */
         $categories = Category::all();
+        $tags = Tag::all();
         /* Qua ritorno la view del form per editare */
-        return view('admin.posts.edit', compact('post', 'categories'));
+        return view('admin.posts.edit', compact('post', 'categories', 'tags'));
     }
 
     /**
@@ -98,7 +101,8 @@ class PostController extends Controller
                 'title' => 'required|max:50',
                 'category_id' => 'nullable|exists:categories,id',
                 'cover' => 'nullable',
-                'content' => 'nullable'
+                'content' => 'nullable',
+                'tags' => 'exists:tags,id' //validate tags
             ]
         );
 
@@ -107,6 +111,8 @@ class PostController extends Controller
         $val_data['slug'] = $slug;
          /* Avvio l'update */
         $post->update($val_data);
+        /* Lo sincronizzo coi Tags */
+        $post->tags()->sync($request->tags);
 
         /* Ora eseguo il return della rotta */
         return redirect()->route('admin.posts.index');

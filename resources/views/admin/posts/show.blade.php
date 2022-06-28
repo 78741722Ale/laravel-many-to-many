@@ -16,7 +16,7 @@
         </div>
         <!-- Tags -->
         <div class="tags">
-            tags: @if(count($post->tags) > 0)
+            <strong>Tags: </strong>  @if(count($post->tags) > 0)
                 @foreach($post->tags as $tag)
                 {{$tag->name}}
                 @endforeach
@@ -25,7 +25,7 @@
             @endif
         </div>
         <!-- Contenuto -->
-        <div class="content">{{$post->content}}</div>
+        <div class="content"> <strong>Content: </strong> {{$post->content}}</div>
     </div>
 </div>
 
