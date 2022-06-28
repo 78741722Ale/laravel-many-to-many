@@ -39,21 +39,6 @@
             @endforeach
         </select>
     </div>
-    <!-- Seleziona dei tag -->
-    <div class="mb-4">
-        <label for="tags" class="form-label">Tags</label>
-        <select multiple class="form-select" name="tags[]" id="tags" aria-label="tags">
-            <option value="" disabled>Select a Tag</option>
-            @forelse ($tags as $tag)
-                <option value="{{$tag->id}}">{{$tag->name}}</option>
-            @empty
-                <option value="">No tags</option>
-            @endforelse
-        </select>
-    </div>
-    @error('tags')
-        <div class="alert alert-danger">{{ $message }}</div>
-    @enderror
     <!-- Contenuto del Post -->
     <div class="mb-4">
         <label for="content">Contenuto del Post</label>

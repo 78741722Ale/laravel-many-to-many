@@ -10,12 +10,12 @@
     <div class="mb-4">
         <label for="title">Titolo</label>
         <input type="text" name="title" id="title" class="form-control @error('title') is-invalid @enderror" placeholder="Scrivi un titolo" aria-describedby="titleHelper" value="{{old('title')}}">
-        <small id="titleHelper" class="text-muted">Max 150 carachters</small>
+        <small id="titleHelper" class="text-muted">Max 150 Caratteri</small>
     </div>
     <!-- Input immagine del post -->
     <div class="mb-4">
         <label for="cover">Immagine</label>
-        <input type="text" name="cover" id="cover" class="form-control  @error('cover') is-invalid @enderror" placeholder="Learn php article" aria-describedby="coverHelper" value="{{old('cover')}}">
+        <input type="text" name="cover" id="cover" class="form-control @error('cover') is-invalid @enderror" placeholder="Learn php article" aria-describedby="coverHelper" value="{{old('cover')}}">
         <small id="cover" class="text-muted">Immagine del Post</small>
     </div>
     <!-- Selezione della categoria -->
