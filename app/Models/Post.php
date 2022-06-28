@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Post extends Model
 {
-    protected $fillable = ['title', 'content', 'slug', 'cover_image', 'category_id'];
+    protected $fillable = ['title', 'content', 'slug', 'cover', 'category_id'];
 
     public static function generateSlug($title)
     {

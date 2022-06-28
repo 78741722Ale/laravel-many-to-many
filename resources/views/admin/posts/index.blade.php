@@ -30,7 +30,7 @@
                 <!-- Colonna dello Slug (praticamente mette i trattini al titolo (?) ) -->
                 <td>{{$post->slug}}</td>
                 <!-- Colonna dell'immagine -->
-                <td><img width="150" src="{{$post->cover_image}}" alt="Cover image {{$post->title}}"></td>
+                <td><img width="150" src="{{$post->cover}}" alt="Cover image {{$post->title}}"></td>
                 <!-- Colonna delle opzioni -->
                 <td>
                     <!-- Button per la rotta show.blade.php -->
