@@ -12,6 +12,7 @@ use App\Http\Requests\PostRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
 class PostController extends Controller
 {
     /**
@@ -77,7 +78,8 @@ class PostController extends Controller
         $new = Post::create($val_data);
         $new->tags()->attach($request->tags);
 
-        return (new NewPostCreated($new))->render(); // Return necessario per la Mail
+        // return (new NewPostCreated($new))->render(); // Return necessario per la Mail (1)
+        Mail::to('user@example.com')->send(new NewPostCreated($new));
 
 
         /* Ora il return del pattern */
