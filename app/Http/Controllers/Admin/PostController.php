@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+
 use App\Models\Post;
 use App\Models\Category;
 use App\Models\Tag;
+use App\Mail\NewPostCreated; // QUESTO DA IMPORTAREEEES
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PostRequest;
 use Illuminate\Http\Request;
@@ -74,8 +76,12 @@ class PostController extends Controller
         // Crea la risorsa
         $new = Post::create($val_data);
         $new->tags()->attach($request->tags);
+
+        return (new NewPostCreated($new))->render(); // Return necessario per la Mail
+
+
         /* Ora il return del pattern */
-        return redirect()->route('admin.posts.index');
+        return redirect()->route('admin.posts.index')->with('message', 'Il post è stato creato correttamente');
     }
 
     /**
