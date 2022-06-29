@@ -7,6 +7,7 @@ use App\Models\Post;
 use App\Models\Category;
 use App\Models\Tag;
 use App\Mail\NewPostCreated; // QUESTO DA IMPORTAREEEES
+use App\Mail\PostUpdatedAdminMessage; // QUESTO DA IMPORTAREEEES
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PostRequest;
 use Illuminate\Http\Request;
@@ -159,6 +160,8 @@ class PostController extends Controller
         $post->update($val_data);
         /* Lo sincronizzo coi Tags */
         $post->tags()->sync($request->tags);
+
+        return (new PostUpdatedAdminMessage($post))->render(); // Return necessario per la Mail (1)
 
         /* Ora eseguo il return della rotta */
         return redirect()->route('admin.posts.index')->with('message', "$post->title è stato aggiornato");
