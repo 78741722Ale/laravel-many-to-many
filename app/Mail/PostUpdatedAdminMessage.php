@@ -35,7 +35,7 @@ class PostUpdatedAdminMessage extends Mailable
         ->markdown('mail.markdown.admin-postupdated')
         ->with([
             'postSlug' => $this->post->slug,
-            'postUrl' => env('APP_URL') . 'posts/' . $this->post->slug
+            'postUrl' => env('APP_URL') . '/posts/' . $this->post->slug
         ]);
     }
 }

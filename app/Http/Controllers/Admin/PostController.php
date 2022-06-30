@@ -161,8 +161,8 @@ class PostController extends Controller
         /* Lo sincronizzo coi Tags */
         $post->tags()->sync($request->tags);
 
-        return (new PostUpdatedAdminMessage($post))->render(); // Return necessario per la Mail (1)
-
+        // return (new PostUpdatedAdminMessage($post))->render(); // Return necessario per la Mail (1)
+        Mail::to('user@example.com')->send(new PostUpdatedAdminMessage($post));
         /* Ora eseguo il return della rotta */
         return redirect()->route('admin.posts.index')->with('message', "$post->title è stato aggiornato");
     }
